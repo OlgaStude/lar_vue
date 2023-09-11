@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\loginRequest;
+use App\Http\Requests\registrationRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,73 +13,35 @@ use Illuminate\Support\Facades\Session;
 
 class UserController extends Controller
 {
-    public function login(Request $request)
+
+    public function register(registrationRequest $req)
     {
-        $credentials = [
-            'email' => $request->email,
-            'password' => $request->password
-        ];
 
-        if(Auth::attempt($credentials)) {
-            $success = true;
-            $message = "User login successfully";
-        } else {
-            $success = false;
-            $message = "Unautorised";
+        $user = User::create([
+            'name' => $req->name,
+            'email' => $req->email,
+            'password' => Hash::make($req->password)
+        ]);
+
+        if ($user) {
+
+            return response()->json(['status' => 200, 'message' => 'new person is added']);
         }
-
-        $response = [
-            'success' => $success,
-            'message' => $message
-        ];
-
-        return response()->json($response);
     }
 
 
-    public function register(Request $request)
+    public function login(loginRequest $req)
     {
-        try {
-            $user = new User();
-            $user->name = $request->name;
-            $user->email = $request->email;
-            $user->password = Hash::make($request->password);
-            $user->save();
 
-            $success = true;
-            $message = "User register successfully";
-
-        } catch (\Illuminate\Database\QueryException $ex) {
-            $success = false;
-            $message = $ex->getMessage();
-        }
-
-        $response = [
-            'success' => $success,
-            'message' => $message
+        $user = [
+            'email' => $req->email,
+            'password' => $req->password
         ];
 
-        return response()->json($response);
-
-    }
-
-
-    public function logout()
-    {
-        try {
-            Session::flush();
-            $success = true;
-            $message = "Logout successfully";
-        } catch (\Illuminate\Database\QueryException $ex) {
-            $success = false;
-            $message = $ex->getMessage();
+        if (Auth::attempt($user)) {
+            return response()->json(['status' => 200, 'message' => 'user logged in']);
         }
 
-        $response = [
-            'success' => $success,
-            'message' => $message
-        ];
-
-        return response()->json($response);
+        return response()->json(['status' => 400, 'message' => 'user didn\'t log in']);
     }
 }
