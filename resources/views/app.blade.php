@@ -15,7 +15,9 @@
         let globalIsLogged = true;
     </script>
     <script>
-        let user = Auth::user()
+        window.Laravel = {!!json_encode([
+            'user' => Auth::user()
+        ])!!}
     </script>
     @else
     <script>

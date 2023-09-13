@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\loginReques;
 use App\Http\Requests\loginRequest;
 use App\Http\Requests\registrationRequest;
 use App\Models\User;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Session;
 class UserController extends Controller
 {
 
-    public function register(registrationRequest $req)
+    public function register(Request $req)
     {
 
         $user = User::create([
@@ -30,7 +31,7 @@ class UserController extends Controller
     }
 
 
-    public function login(loginRequest $req)
+    public function login(loginReques $req)
     {
 
         $user = [

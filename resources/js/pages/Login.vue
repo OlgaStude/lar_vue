@@ -1,6 +1,7 @@
 <template>
   <div class="container">
-    <strong>{{ error }}</strong>
+    <strong>{{ errors.password }}</strong>
+    <strong>{{ errors.email }}</strong>
     <form>
       <label for="email">E-mail</label>
       <input
@@ -39,7 +40,10 @@ export default {
     return {
       email: "",
       password: "",
-      error: null,
+      errors: {
+        'password': null,
+        'email': null
+      },
     };
   },
   created() {},
@@ -54,14 +58,17 @@ export default {
           })
           .then((response) => {
             if (response.data.status == 200) {
-              this.error = response.data.message;
-              this.$router.go("/dashboard");
+              console.log('!');
+              this.$router.push("/dashboard");
             } else {
-              this.error = error.response.data.errors;
+              this.error = response.data.message;
             }
           })
-          .catch(function (error) {
-            console.log(error);
+          .catch(err => {
+            this.errors = {
+              'email': err.response.data.errors.email[0],
+              'password': err.response.data.errors.password[0],
+            }
           });
       });
     },
